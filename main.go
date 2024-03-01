@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -79,9 +78,7 @@ func createShortener(w http.ResponseWriter, r *http.Request) {
 	url.ID = uuid.NewString()
 	url.ExpiredAt = time.Now().Add(expired_time)
 
-	fmt.Println(url)
-
-	_, errSQL := db.Exec("Insert into Shortener (id, url, shortUrl, expiredAt) VALUES (?,?,?,?)",
+	_, errSQL := db.Exec("INSERT INTO Shortener (id, url, shortUrl, expiredAt) VALUES (?,?,?,?)",
 		url.ID, url.Url, url.ShortUrl, url.ExpiredAt)
 	if errSQL != nil {
 		http.Error(w, errSQL.Error(), http.StatusInternalServerError)
@@ -96,7 +93,7 @@ func getShortener(w http.ResponseWriter, r *http.Request) {
 	shortUrl := chi.URLParam(r, "url")
 
 	var originalURL string
-	err := db.QueryRow("SELECT url FROM Shortener WHERE shortUrl=? AND expiredAt > ?", shortUrl, time.Now()).Scan(&originalURL)
+	err := db.QueryRow("SELECT url FROM Shortener WHERE shortUrl=?", shortUrl).Scan(&originalURL)
 	if err != nil {
 		http.NotFound(w, r)
 		return
@@ -131,6 +128,7 @@ func updateShortener(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(updateUrl)
+	return
 
 }
 
@@ -157,4 +155,5 @@ func deleteShortener(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(deleteUrl)
+	return
 }

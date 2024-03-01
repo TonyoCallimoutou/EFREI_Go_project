@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -12,7 +13,7 @@ import (
 
 func TestCreateShortener(t *testing.T) {
 	// Création d'une nouvelle requête HTTP simulée avec un corps JSON
-	shortenerBody := `{"url": "http://example.com", "shortUrl": "caca"}`
+	shortenerBody := `{"url": "http://example.com", "shortUrl": "test"}`
 	req, err := http.NewRequest("POST", "/", bytes.NewBufferString(shortenerBody))
 	if err != nil {
 		t.Fatal(err)
@@ -24,24 +25,24 @@ func TestCreateShortener(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	// Création d'une fonction mock SQL
-	db, mock, err := sqlmock.New()
+	hh, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
-	defer db.Close()
+	defer hh.Close()
 
+	db = hh
 
 	// Définition des attentes de la requête SQL simulée
 	mock.ExpectExec("INSERT INTO Shortener").WillReturnResult(sqlmock.NewResult(1, 1))
 
-	
-	fmt.Println(shortenerBody)
-
 	// Appel de la fonction à tester
 	createShortener(rr, req)
 
-	
-	fmt.Println(shortenerBody)
+	type ResponseBody struct {
+		Url      string `json:"Url"`
+		ShortUrl string `json:"ShortUrl"`
+	}
 
 	// Vérification du code de statut HTTP retourné
 	if status := rr.Code; status != http.StatusOK {
@@ -49,12 +50,22 @@ func TestCreateShortener(t *testing.T) {
 			status, http.StatusOK)
 	}
 
-	// Vérification du corps de la réponse HTTP
-	expected := `{"ID":"testID","Url":"http://example.com","ShortUrl":"test","ExpiredAt":"0001-01-01T00:00:00Z"}`
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
+	var responseBody ResponseBody
+	err = json.Unmarshal(rr.Body.Bytes(), &responseBody)
+	if err != nil {
+		t.Errorf("error unmarshaling response body: %v", err)
 	}
+	expected := ResponseBody{
+		Url:      "http://example.com",
+		ShortUrl: "test",
+	}
+
+	if responseBody != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			responseBody, expected)
+	}
+
+	fmt.Println(rr.Body.String())
 
 	// Vérification des attentes SQL simulées
 	if err := mock.ExpectationsWereMet(); err != nil {
