@@ -1,14 +1,84 @@
 # URL Shortener
 
 Projet d'URL Shortener réalisé pour le cours de Go.
-
 ## Installation
 
-Pour démarrer le projet, il faut lancer la commande `go run main.go` dans le fichier main. Ensuite vous pouvez accéder à l'application à l'adresse suivante : http://localhost:4000
+Créer la base de données en important le fichier `url_shortener.sql`.
 
-## Routes
-`/` : en POST, cet endpoint permet de créer une URL raccourcie. 
-Prend en paramètre Url (le lien que vous souhaitez raccourcir) et ShortUrl (seulement si vous souhaitez créer un lien personalisable)
+Créer un fichier `.env` dans la racine du projet, ce fichier va contenir les informations pour accéder à votre base de données.
+
+`MYSQL_USER=[user]`
+
+`MYSQL_PASSWORD=[password]`
+
+`MYSQL_URL=[url]`
+
+`MYSQL_PORT=[port]`
+
+`MYSQL_DATABASE=ulrshortener`
+    
+## Lancer les tests
+
+Pour lancer les tests, utiliser la commande suivante :
+
+```bash
+  go test
+```
+
+## Lancer le projet
+
+Pour démarrer le projet, il faut lancer la commande `go run main.go` à la racine du projet. Ensuite vous pouvez accéder à l'application à l'adresse suivante : http://localhost:4000.
+
+## Documentation API
+
+#### Redirection
+
+```http
+  GET /{ShortUrl}
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `ShortUrl`| `string` | **Requis**. La ShortUrl va rediriger vers l'URL associée. |
+
+#### Créer une ShortUrl
+
+```http
+  POST /
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `Url`     | `string` | **Requis**. URL que vous voulez raccourcir. |
+| `ShortUrl`| `string` | **Requis**. L'URL raccourcie. |
+
+
+#### Modifier une ShortUrl
+
+```http
+  PUT /
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `Url`     | `string` | **Requis**. Nouvelle URL. |
+| `ShortUrl`| `string` | **Requis**. L'URL raccourcie que vous voulez modifier. |
+
+#### Supprimer une ShortUrl
+
+```http
+  DELETE /
+```
+
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `ShortUrl`| `string` | **Requis**. L'URL que vous voulez supprimer. |
+
+#### Récupère toutes les URLSs dans la base de données.
+
+```http
+  GET /
+```
 
 ## Authors
 - [@Tonyo Callimoutou](https://github.com/TonyoCallimoutou)
