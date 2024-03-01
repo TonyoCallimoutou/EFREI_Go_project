@@ -16,6 +16,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/joho/godotenv v1.5.1
+	github.com/lithammer/shortuuid v3.0.0+incompatible
 	github.com/lithammer/shortuuid/v3 v3.0.7
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0
 )

@@ -3,7 +3,6 @@ package infrastructure
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"go_shortener/src/domain"
 	"go_shortener/src/interface/database"
 	"log"
@@ -12,12 +11,13 @@ import (
 
 	"github.com/blockloop/scan/v2"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/lithammer/shortuuid"
 
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 )
 
-var expired_time = 10 * time.Second
+var expired_time = 10 * time.Minute
 
 type LinkStore struct {
 	db *sql.DB
@@ -38,8 +38,6 @@ func NewLinkStoreMySQL() database.LinkStore {
 
 	connection := shortenerSQL + ":" + passwordSQL + "@tcp(" + urlSQL + ":" + portSQL + ")/" + dbSQL + "?parseTime=true"
 
-	fmt.Println(connection)
-
 	db, err := sql.Open("mysql", connection)
 	if err != nil {
 		panic(err.Error)
@@ -51,10 +49,12 @@ func NewLinkStoreMySQL() database.LinkStore {
 
 func (handler *LinkStore) Create(url domain.Shortener) error {
 
-	fmt.Println("coucou4")
-
 	url.ID = uuid.NewString()
 	url.ExpiredAt = time.Now().Add(expired_time)
+
+	if url.ShortUrl == "" {
+		url.ShortUrl = shortuuid.New()
+	}
 
 	_, errSQL := handler.db.Exec("INSERT INTO Shortener (id, url, shortUrl, expiredAt) VALUES (?,?,?,?)",
 		url.ID, url.Url, url.ShortUrl, url.ExpiredAt)
@@ -65,10 +65,21 @@ func (handler *LinkStore) GetById(url domain.Shortener) (string, error) {
 
 	var originalURL string
 	err := handler.db.QueryRow("SELECT url FROM Shortener WHERE shortUrl=?", url.ShortUrl).Scan(&originalURL)
-	return originalURL, err
+	if err != nil {
+		return "", nil
+	}
+
+	_, errSQL := handler.db.Exec("UPDATE Shortener set count = count+1 where shortUrl = ?", url.ShortUrl)
+	if errSQL != nil {
+		return "", errSQL
+	}
+
+	return originalURL, nil
+
 }
 
 func (handler *LinkStore) GetAll() ([]domain.Shortener, error) {
+
 	var URLArray []domain.Shortener
 	rows, err := handler.db.Query("SELECT * FROM Shortener")
 	if err != nil {

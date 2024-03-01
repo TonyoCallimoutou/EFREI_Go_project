@@ -7,6 +7,7 @@ CREATE TABLE Shortener (
     url VARCHAR(45) NOT NULL,
     shortUrl VARCHAR(45) NOT NULL UNIQUE,
     expiredAt datetime NOT NULL,
+    count INT Default 0,
     PRIMARY KEY (id)
 );
 

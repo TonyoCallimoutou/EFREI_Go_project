@@ -40,9 +40,9 @@ func RunServer(shortenerController database.LinkStore) http.Handler {
 	router.Route("/api", func(r chi.Router) {
 		r.Post("/", createShortener(shortenerController))
 		r.Get("/", getAllShortener(shortenerController))
-		r.Get("/{url}", getShortener(shortenerController))
+		r.Get("/redirect/{url}", getShortener(shortenerController))
 		r.Put("/", updateShortener(shortenerController))
-		r.Delete("/", deleteShortener(shortenerController))
+		r.Delete("/{url}", deleteShortener(shortenerController))
 	})
 
 	return router
@@ -127,12 +127,9 @@ func updateShortener(shortenerController database.LinkStore) http.HandlerFunc {
 func deleteShortener(shortenerController database.LinkStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		deleteUrl := &domain.Shortener{}
-		err := json.NewDecoder(r.Body).Decode(deleteUrl)
-		if err != nil {
-			log.Fatalf("error: %s", err.Error())
-		}
+		deleteUrl.ShortUrl = chi.URLParam(r, "url")
 
-		err = shortenerController.Delete(*deleteUrl)
+		err := shortenerController.Delete(*deleteUrl)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
