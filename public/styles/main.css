@@ -223,3 +223,14 @@ main {
     background-color: var(--neutral-color-5);
   }
 }
+
+.short-link {
+  text-decoration: none;
+  color: var(--main-color-4);
+
+  @media(hover: hover) {
+    &:hover {
+      text-decoration: 1px underline;
+    }
+  }
+}
