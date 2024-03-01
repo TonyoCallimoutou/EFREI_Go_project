@@ -25,9 +25,11 @@ Pour lancer les tests, utiliser la commande suivante :
   go test
 ```
 
+
 ## Lancer le projet
 
 Pour démarrer le projet, il faut lancer la commande `go run main.go` à la racine du projet. Ensuite vous pouvez accéder à l'application à l'adresse suivante : http://localhost:4000.
+
 
 ## Documentation API
 
@@ -67,7 +69,7 @@ Pour démarrer le projet, il faut lancer la commande `go run main.go` à la raci
 #### Supprimer une ShortUrl
 
 ```http
-  DELETE /
+  DELETE /{ShortUrl}
 ```
 
 | Parameter | Type     | Description                       |
@@ -80,6 +82,19 @@ Pour démarrer le projet, il faut lancer la commande `go run main.go` à la raci
   GET /
 ```
 
+
+## Description des dossiers
+
+### Public
+
+Le dossier `public` contient tous les fichiers utiles au frontend.
+
+- Dossier Public
+  - Dossier Script (contient les scripts)
+  - Dossier Style (contient le css)
+  - Fichier index.html (contient le html du front)
+
+    
 ## Authors
 - [@Tonyo Callimoutou](https://github.com/TonyoCallimoutou)
 - [@Nathan Chevalet](https://github.com/NtchPlayer)
