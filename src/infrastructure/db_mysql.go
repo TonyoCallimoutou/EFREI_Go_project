@@ -3,12 +3,14 @@ package infrastructure
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"go_shortener/src/domain"
 	"go_shortener/src/interface/database"
 	"log"
 	"os"
 	"time"
 
+	"github.com/blockloop/scan/v2"
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/google/uuid"
@@ -34,7 +36,9 @@ func NewLinkStoreMySQL() database.LinkStore {
 	urlSQL := os.Getenv("MYSQL_URL")
 	portSQL := os.Getenv("MYSQL_PORT")
 
-	connection := shortenerSQL + ":" + passwordSQL + "@tcp(" + urlSQL + ":" + portSQL + ")/" + dbSQL
+	connection := shortenerSQL + ":" + passwordSQL + "@tcp(" + urlSQL + ":" + portSQL + ")/" + dbSQL + "?parseTime=true"
+
+	fmt.Println(connection)
 
 	db, err := sql.Open("mysql", connection)
 	if err != nil {
@@ -46,6 +50,8 @@ func NewLinkStoreMySQL() database.LinkStore {
 }
 
 func (handler *LinkStore) Create(url domain.Shortener) error {
+
+	fmt.Println("coucou4")
 
 	url.ID = uuid.NewString()
 	url.ExpiredAt = time.Now().Add(expired_time)
@@ -62,9 +68,18 @@ func (handler *LinkStore) GetById(url domain.Shortener) (string, error) {
 	return originalURL, err
 }
 
-func (handler *LinkStore) GetAll() (string, error) {
-	// get All
-	return "", nil
+func (handler *LinkStore) GetAll() ([]domain.Shortener, error) {
+	var URLArray []domain.Shortener
+	rows, err := handler.db.Query("SELECT * FROM Shortener")
+	if err != nil {
+		return URLArray, err
+	}
+
+	err = scan.Rows(&URLArray, rows)
+	if err != nil {
+		return URLArray, err
+	}
+	return URLArray, nil
 }
 
 func (handler *LinkStore) Update(url domain.Shortener) error {
