@@ -89,10 +89,10 @@ func RunServer() http.Handler {
 	})
 
 	router.Route("/api", func(r chi.Router) {
-		r.Post("/api", createShortener)
-		r.Get("/api/{url}", getShortener)
-		r.Put("/api", updateShortener)
-		r.Delete("/api", deleteShortener)
+		r.Post("/", createShortener)
+		r.Get("/{url}", getShortener)
+		r.Put("/", updateShortener)
+		r.Delete("/", deleteShortener)
 	})
 
 	return router

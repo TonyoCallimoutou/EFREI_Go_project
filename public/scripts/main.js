@@ -21,12 +21,13 @@ function switchInputId() {
 
 function reduceLink(e) {
   e.preventDefault()
-  console.log(longUrlInput.value)
-  console.log(shortUrlInput.value)
   try {
-    fetch('http://localhost:4000', {
+    fetch('http://localhost:4000/api', {
       method: 'POST',
-      body: new FormData(document.querySelector('form')) // Collect form data
+      body: JSON.stringify({
+        Url: longUrlInput.value,
+        ShortUrl: shortUrlInput.value
+      })
     })
       .then(response => response.text()) // Read response as text
       .then(data => alert(data)); // Alert the response
