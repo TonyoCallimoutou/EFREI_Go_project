@@ -24,6 +24,10 @@ type Shortener struct {
 	ExpiredAt time.Time `json:"expired_at"`
 }
 
+type ErrorResponse struct {
+	Message string `json:"message"`
+}
+
 var expired_time = 10 * time.Second
 
 var db *sql.DB
@@ -111,12 +115,11 @@ func createShortener(w http.ResponseWriter, r *http.Request) {
 	_, errSQL := db.Exec("INSERT INTO Shortener (id, url, shortUrl, expiredAt) VALUES (?,?,?,?)",
 		url.ID, url.Url, url.ShortUrl, url.ExpiredAt)
 	if errSQL != nil {
-		http.Error(w, errSQL.Error(), http.StatusInternalServerError)
+		handleSQLError(w, errSQL)
 		return
 	}
 
 	json.NewEncoder(w).Encode(url)
-
 }
 
 func getShortener(w http.ResponseWriter, r *http.Request) {
@@ -143,13 +146,13 @@ func updateShortener(w http.ResponseWriter, r *http.Request) {
 	res, errSQL := db.Exec("Update Shortener set url = ?,expiredAt = ? where shortUrl = ?",
 		updateUrl.Url, updateUrl.ExpiredAt, updateUrl.ShortUrl)
 	if errSQL != nil {
-		http.Error(w, errSQL.Error(), http.StatusInternalServerError)
+		handleSQLError(w, errSQL)
 		return
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleSQLError(w, err)
 		return
 	}
 	if rowsAffected == 0 {
@@ -159,7 +162,6 @@ func updateShortener(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(updateUrl)
 	return
-
 }
 
 func deleteShortener(w http.ResponseWriter, r *http.Request) {
@@ -171,12 +173,12 @@ func deleteShortener(w http.ResponseWriter, r *http.Request) {
 
 	res, errSQL := db.Exec("Delete from Shortener where shortUrl = ?", deleteUrl.ShortUrl)
 	if errSQL != nil {
-		http.Error(w, errSQL.Error(), http.StatusInternalServerError)
+		handleSQLError(w, errSQL)
 		return
 	}
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleSQLError(w, err)
 		return
 	}
 	if rowsAffected == 0 {
@@ -186,4 +188,18 @@ func deleteShortener(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(deleteUrl)
 	return
+}
+
+func handleSQLError(w http.ResponseWriter, errSQL error) {
+	errorResponse := ErrorResponse{Message: errSQL.Error()}
+
+	jsonResponse, err := json.Marshal(errorResponse)
+	if err != nil {
+		http.Error(w, "Erreur interne du serveur", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusInternalServerError)
+	w.Write(jsonResponse)
 }
