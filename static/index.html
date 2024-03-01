@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/reset.css">
+    <link rel="stylesheet" href="styles/main.css">
+  </head>
+  <body>
+    <main class="main-container">
+      <div class="main-wrapper">
+        <h1 class="main-title">URL Shortener</h1>
+        <form class="form-container" onsubmit="reduceLink">
+          <div class="input-wrapper">
+            <div class="input-container">
+              <label class="label" for="long-url">Votre longue URL</label>
+              <input class="text-input" type="url" required id="long-url" placeholder="https://exemple.com/myLongURL" />
+            </div>
+            <div class="input-container">
+              <label class="label" for="short-url">Votre ID</label>
+              <input class="text-input" id="short-url" maxlength="15" placeholder="monLienCourt" />
+            </div>
+          </div>
+          <p class="helper error">
+            Une erreur est survenue
+          </p>
+          <p class="helper success">
+            Voici votre lien: <a class="short-link" href="#" target="_blank"></a>
+          </p>
+          <div class="btn-container">
+            <div class="toggle-container">
+              <input type="checkbox" id="custom-id" class="toggle-input" checked onchange="switchInputId()" />
+              <label for="custom-id" class="label">ID Personnalisé</label>
+            </div>
+            <input class="btn" type="submit" value="Raccourcir le lien" />
+          </div>
+        </form>
+      </div>
+    </main>
+    <script src="script/main.js"></script>
+  </body>
+</html>
