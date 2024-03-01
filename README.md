@@ -100,7 +100,6 @@ Le dossier `src` contient tous les fichiers utiles à l'API.
   - Dossier domain (contient le type Shortener)
   - Dossier infrastructure (contient les fichiers permettant d'initialiser la BDD et le serveur)
   - Dossier interface
-  - Dossier usecase
   - Fichier server.go (le fichier qu'il faut exécuter pour lancer l'API)
     
 ## Authors
