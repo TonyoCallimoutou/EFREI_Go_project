@@ -33,7 +33,7 @@ async function reduceLink(e) {
       method: 'POST',
       body: JSON.stringify({
         Url: longUrlInput.value,
-        ShortUrl: shortUrlInput.value
+        ShortUrl: customId.checked ? shortUrlInput.value : ''
       })
     });
 
