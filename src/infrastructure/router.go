@@ -128,6 +128,8 @@ func updateShortener(shortenerController database.LinkStore) http.HandlerFunc {
 			return
 		}
 
+		url.ExpiredAt = time.Now().Add(expired_time)
+
 		err = shortenerController.Update(*url)
 		if err != nil {
 			http.NotFound(w, r)

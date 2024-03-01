@@ -83,8 +83,6 @@ func (handler *LinkStore) GetAll() ([]domain.Shortener, error) {
 }
 
 func (handler *LinkStore) Update(url domain.Shortener) error {
-
-	url.ExpiredAt = time.Now().Add(expired_time)
 	res, errSQL := handler.db.Exec("Update Shortener set url = ?,expiredAt = ? where shortUrl = ?",
 		url.Url, url.ExpiredAt, url.ShortUrl)
 	if errSQL != nil {
