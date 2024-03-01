@@ -48,7 +48,7 @@ async function reduceLink(e) {
     longUrlInput.value = ''
     helperSuccess.style.display = 'block'
     console.log(data)
-    const shortLinkValue =  `http://localhost:4000/api/${data.shortUrl}`
+    const shortLinkValue =  `http://localhost:4000/api/redirect/${data.shortUrl}`
     shortLink.innerText = shortLinkValue
     shortLink.href = shortLinkValue
   } catch (error) {
