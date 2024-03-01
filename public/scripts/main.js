@@ -79,6 +79,31 @@ async function deleteUrl (ShortUrl) {
   }
 }
 
+
+const updateUrlInput = document.querySelector('#update-url')
+async function updateUrl (ShortUrl) {
+  helperError.style.display = 'none'
+  helperSuccess.style.display = 'none'
+  try {
+    const response = await fetch(`http://localhost:4000/api/`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        Url: updateUrlInput.value,
+        ShortUrl
+      })
+    })
+
+    const data = response.json()
+    if (response.status === 500) {
+      throw new Error(data.message)
+    }
+
+    getAllUrl()
+  } catch (e) {
+    console.log(e)
+  }
+}
+
 getAllUrl()
 async function getAllUrl () {
   while (urlsArray.firstChild) {
@@ -121,8 +146,15 @@ async function getAllUrl () {
       deleteButton.classList.add('link-delete')
       deleteButton.innerText = 'Supprimer'
       deleteButton.addEventListener('click', () => deleteUrl(link.shortUrl))
+
+      let updateButton = document.createElement('button')
+      updateButton.classList.add('link-delete')
+      updateButton.innerText = 'Modifier'
+      updateButton.addEventListener('click', () => updateUrl(link.shortUrl))
+
       let containerButton = document.createElement('div')
       containerButton.appendChild(deleteButton)
+      containerButton.appendChild(updateButton)
       div.appendChild(containerButton)
 
       // add row
@@ -133,3 +165,4 @@ async function getAllUrl () {
     console.log(e)
   }
 }
+

@@ -11,6 +11,7 @@
       <div class="main-wrapper">
         <h1 class="main-title">URL Shortener</h1>
         <form class="form-container" onsubmit="reduceLink">
+          <h2 class="urls-array-title">Ajout d'une nouvelle URL</h2>
           <div class="input-wrapper">
             <div class="input-container">
               <label class="label" for="long-url">Votre longue URL</label>
@@ -35,6 +36,13 @@
             <input class="btn" type="submit" value="Raccourcir le lien" />
           </div>
         </form>
+        <section class="urls-array-wrapper">
+          <h2 class="urls-array-title">Mise à jour d'un lien</h2>
+          <div class="input-container">
+            <label class="label" for="update-url">Votre longue URL</label>
+            <input class="text-input" type="url" required id="update-url" placeholder="https://exemple.com/newURL" />
+          </div>
+        </section>
         <section class="urls-array-wrapper">
           <h2 class="urls-array-title">Liste des liens existants <span class="urls-array-count"></span></h2>
           <div class="urls-array"></div>
