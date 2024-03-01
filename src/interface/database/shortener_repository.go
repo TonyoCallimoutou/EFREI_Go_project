@@ -14,7 +14,7 @@ func (db *ShortenerRepository) getById() (string, error) {
 	return db.getById()
 }
 
-func (db *ShortenerRepository) getAll() (string, error) {
+func (db *ShortenerRepository) getAll() ([]domain.Shortener, error) {
 	return db.GetAll()
 }
 

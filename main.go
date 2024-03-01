@@ -51,6 +51,8 @@ func main() {
 
 	connection := userSQL + ":" + passwordSQL + "@tcp(" + urlSQL + ":" + portSQL + ")/" + dbSQL + "?parseTime=true"
 
+	fmt.Println(connection)
+
 	db, err = sql.Open("mysql", connection)
 	if err != nil {
 		panic(err)
