@@ -270,6 +270,11 @@ main {
   border-bottom: 1px solid var(--neutral-color-2);
 }
 
+.count-link {
+  margin-left: 8px;
+  color: var(--neutral-color-5)
+}
+
 .link-delete {
   background: none;
   border: none;

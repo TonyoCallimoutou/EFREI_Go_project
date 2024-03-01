@@ -90,16 +90,31 @@ async function getAllUrl () {
     const data = await response.json()
     urlsArrayCount.innerText = `(${data ? data.length : '0'})`
 
+    if (data === null) {
+      throw new Error('No Data')
+    }
+
     data.forEach((link) => {
       linkValue = `http://localhost:4000/api/redirect/${link.shortUrl}`
       let div = document.createElement('div')
+
+      let linkContainer = document.createElement('p')
+
       div.classList.add('url-link')
       let a = document.createElement('a')
       a.classList.add('short-link')
       a.href = linkValue
       a.target = '_blank'
       a.innerText = linkValue
-      div.appendChild(a)
+      linkContainer.appendChild(a)
+
+      // Create link
+      let countLink = document.createElement('span')
+      countLink.textContent = `(${link.count})`
+      countLink.classList.add('count-link')
+      linkContainer.appendChild(countLink)
+
+      div.appendChild(linkContainer)
 
       // add delete button
       let deleteButton = document.createElement('button')

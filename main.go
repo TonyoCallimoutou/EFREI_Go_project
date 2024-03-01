@@ -13,6 +13,7 @@ import (
 	"github.com/blockloop/scan/v2"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
+	"github.com/lithammer/shortuuid/v3"
 
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
@@ -115,6 +116,10 @@ func createShortener(w http.ResponseWriter, r *http.Request) {
 	url.ID = uuid.NewString()
 	url.ExpiredAt = time.Now().Add(expired_time)
 
+	if url.ShortUrl == "" {
+		url.ShortUrl = shortuuid.New()
+	}
+
 	_, errSQL := db.Exec("INSERT INTO Shortener (id, url, shortUrl, expiredAt) VALUES (?,?,?,?)",
 		url.ID, url.Url, url.ShortUrl, url.ExpiredAt)
 	if errSQL != nil {
@@ -131,6 +136,11 @@ func getShortener(w http.ResponseWriter, r *http.Request) {
 	var originalURL string
 	err := db.QueryRow("SELECT url FROM Shortener WHERE shortUrl=?", shortUrl).Scan(&originalURL)
 	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	_, errSQL := db.Exec("UPDATE Shortener set count = count+1 where shortUrl = ?", shortUrl)
+	if errSQL != nil {
 		http.NotFound(w, r)
 		return
 	}
