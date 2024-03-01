@@ -7,8 +7,11 @@ import (
 	"go_shortener/src/interface/database"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
+	"github.com/lithammer/shortuuid"
 )
 
 func Init() {
@@ -99,6 +102,13 @@ func createShortener(shortenerController database.LinkStore) http.HandlerFunc {
 			return
 		}
 
+		url.ID = uuid.NewString()
+		url.ExpiredAt = time.Now().Add(expired_time)
+
+		if url.ShortUrl == "" {
+			url.ShortUrl = shortuuid.New()
+		}
+
 		err = shortenerController.Create(*url)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -111,10 +121,14 @@ func createShortener(shortenerController database.LinkStore) http.HandlerFunc {
 
 func updateShortener(shortenerController database.LinkStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		shortUrl := chi.URLParam(r, "url")
 		url := &domain.Shortener{}
-		url.ShortUrl = shortUrl
-		err := shortenerController.Update(*url)
+		err := json.NewDecoder(r.Body).Decode(url)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		err = shortenerController.Update(*url)
 		if err != nil {
 			http.NotFound(w, r)
 			return

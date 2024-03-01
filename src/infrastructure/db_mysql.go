@@ -11,9 +11,6 @@ import (
 
 	"github.com/blockloop/scan/v2"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/lithammer/shortuuid"
-
-	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 )
 
@@ -48,14 +45,6 @@ func NewLinkStoreMySQL() database.LinkStore {
 }
 
 func (handler *LinkStore) Create(url domain.Shortener) error {
-
-	url.ID = uuid.NewString()
-	url.ExpiredAt = time.Now().Add(expired_time)
-
-	if url.ShortUrl == "" {
-		url.ShortUrl = shortuuid.New()
-	}
-
 	_, errSQL := handler.db.Exec("INSERT INTO Shortener (id, url, shortUrl, expiredAt) VALUES (?,?,?,?)",
 		url.ID, url.Url, url.ShortUrl, url.ExpiredAt)
 	return errSQL
