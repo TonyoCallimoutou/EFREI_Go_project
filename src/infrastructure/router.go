@@ -132,7 +132,7 @@ func updateShortener(shortenerController database.LinkStore) http.HandlerFunc {
 
 		err = shortenerController.Update(*url)
 		if err != nil {
-			http.NotFound(w, r)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 

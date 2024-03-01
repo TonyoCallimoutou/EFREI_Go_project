@@ -81,6 +81,7 @@ async function deleteUrl (ShortUrl) {
 
 
 const updateUrlInput = document.querySelector('#update-url')
+updateUrlInput.value = ''
 async function updateUrl (ShortUrl) {
   helperError.style.display = 'none'
   helperSuccess.style.display = 'none'
@@ -98,7 +99,7 @@ async function updateUrl (ShortUrl) {
       throw new Error(data.message)
     }
 
-    getAllUrl()
+    updateUrlInput.value = ''
   } catch (e) {
     console.log(e)
   }
