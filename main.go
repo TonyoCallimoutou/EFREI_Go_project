@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -56,13 +57,42 @@ func main() {
 	}
 }
 
+func getRoot(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("got / request\n")
+	http.ServeFile(w, r, "./public/index.html")
+}
+
+func getMainStyle(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("got / request\n")
+	http.ServeFile(w, r, "./public/styles/main.css")
+}
+
+func getResetStyle(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("got / request\n")
+	http.ServeFile(w, r, "./public/styles/reset.css")
+}
+
+func getScript(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("got / request\n")
+	http.ServeFile(w, r, "./public/scripts/main.js")
+}
+
 func RunServer() http.Handler {
 	router := chi.NewRouter()
-	router.Route("/", func(r chi.Router) {
-		r.Post("/", createShortener)
-		r.Get("/{url}", getShortener)
-		r.Put("/", updateShortener)
-		r.Delete("/", deleteShortener)
+	router.Get("/", getRoot)
+	router.Route("/styles", func(r chi.Router) {
+		r.Get("/main", getMainStyle)
+		r.Get("/reset", getResetStyle)
+	})
+	router.Route("/scripts", func(r chi.Router) {
+		r.Get("/main", getScript)
+	})
+
+	router.Route("/api", func(r chi.Router) {
+		r.Post("/api", createShortener)
+		r.Get("/api/{url}", getShortener)
+		r.Put("/api", updateShortener)
+		r.Delete("/api", deleteShortener)
 	})
 
 	return router
