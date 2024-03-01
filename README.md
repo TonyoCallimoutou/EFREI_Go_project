@@ -28,7 +28,7 @@ Pour lancer les tests, utiliser la commande suivante :
 
 ## Lancer le projet
 
-Pour démarrer le projet, il faut lancer la commande `go run main.go` à la racine du projet. Ensuite vous pouvez accéder à l'application à l'adresse suivante : http://localhost:4000.
+Pour démarrer le projet, il faut lancer la commande `go run src/server.go` à la racine du projet. Ensuite vous pouvez accéder à l'application à l'adresse suivante : http://localhost:4000.
 
 
 ## Documentation API
@@ -94,8 +94,18 @@ Le dossier `public` contient tous les fichiers utiles au frontend.
   - Dossier Style (contient le css)
   - Fichier index.html (contient le html du front)
 
+Le dossier `src` contient tous les fichiers utiles à l'API.
+
+- Dossier src
+  - Dossier domain (contient le type Shortener)
+  - Dossier infrastructure (contient les fichiers permettant d'initialiser la BDD et le serveur)
+  - Dossier interface
+  - Dossier usecase
+  - Fichier server.go (le fichier qu'il faut exécuter pour lancer l'API)
     
 ## Authors
 - [@Tonyo Callimoutou](https://github.com/TonyoCallimoutou)
 - [@Nathan Chevalet](https://github.com/NtchPlayer)
 - [@Lucas Tourneaux](https://www.github.com/Xubeo)
+
+
