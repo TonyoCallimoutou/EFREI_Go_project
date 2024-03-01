@@ -39,6 +39,7 @@ func RunServer(shortenerController database.LinkStore) http.Handler {
 
 	router.Route("/api", func(r chi.Router) {
 		r.Post("/", createShortener(shortenerController))
+		r.Get("/", getAllShortener(shortenerController))
 		r.Get("/{url}", getShortener(shortenerController))
 		r.Put("/", updateShortener(shortenerController))
 		r.Delete("/", deleteShortener(shortenerController))
@@ -63,7 +64,7 @@ func getScript(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./public/scripts/main.js")
 }
 
-func getShortener(shortenerController  database.LinkStore) http.HandlerFunc {
+func getShortener(shortenerController database.LinkStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		shortUrl := chi.URLParam(r, "url")
 		url := &domain.Shortener{}
@@ -75,6 +76,17 @@ func getShortener(shortenerController  database.LinkStore) http.HandlerFunc {
 		}
 
 		http.Redirect(w, r, originalURL, http.StatusSeeOther)
+	}
+}
+
+func getAllShortener(shortenerController database.LinkStore) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		URLArray, err := shortenerController.GetAll()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		jsonResponse(w, http.StatusOK, URLArray)
 	}
 }
 
@@ -97,7 +109,7 @@ func createShortener(shortenerController database.LinkStore) http.HandlerFunc {
 	}
 }
 
-func updateShortener(shortenerController  database.LinkStore) http.HandlerFunc {
+func updateShortener(shortenerController database.LinkStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		shortUrl := chi.URLParam(r, "url")
 		url := &domain.Shortener{}
@@ -112,7 +124,7 @@ func updateShortener(shortenerController  database.LinkStore) http.HandlerFunc {
 	}
 }
 
-func deleteShortener(shortenerController  database.LinkStore) http.HandlerFunc {
+func deleteShortener(shortenerController database.LinkStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		deleteUrl := &domain.Shortener{}
 		err := json.NewDecoder(r.Body).Decode(deleteUrl)
@@ -127,7 +139,6 @@ func deleteShortener(shortenerController  database.LinkStore) http.HandlerFunc {
 		}
 
 		jsonResponse(w, http.StatusOK, deleteUrl)
-		return
 	}
 }
 
