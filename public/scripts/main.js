@@ -37,12 +37,10 @@ async function reduceLink(e) {
       })
     });
 
-    if (response.status === 500) {
-      throw new Error(response)
-    }
     const data = await response.json()
-    console.log(response)
-    console.log(data)
+    if (response.status === 500) {
+      throw new Error(data.message)
+    }
 
     shortUrlInput.value = ''
     longUrlInput.value = ''
@@ -51,8 +49,72 @@ async function reduceLink(e) {
     const shortLinkValue =  `http://localhost:4000/api/redirect/${data.shortUrl}`
     shortLink.innerText = shortLinkValue
     shortLink.href = shortLinkValue
+    getAllUrl()
   } catch (error) {
-    console.log(error)
-    helperError.style.display = 'block' 
+    helperError.innerText = error.message
+    helperError.style.display = 'block'
+  }
+}
+
+
+const urlsArray = document.querySelector('.urls-array')
+const urlsArrayCount = document.querySelector('.urls-array-count')
+
+async function deleteUrl (ShortUrl) {
+  helperError.style.display = 'none'
+  helperSuccess.style.display = 'none'
+  try {
+    const response = await fetch(`http://localhost:4000/api/${ShortUrl}`, {
+      method: 'DELETE'
+    })
+
+    const data = response.json()
+    if (response.status === 500) {
+      throw new Error(data.message)
+    }
+
+    getAllUrl()
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+getAllUrl()
+async function getAllUrl () {
+  while (urlsArray.firstChild) {
+    urlsArray.removeChild(urlsArray.firstChild);
+  }
+
+  try {
+    const response = await fetch('http://localhost:4000/api')
+    const data = await response.json()
+    urlsArrayCount.innerText = `(${data ? data.length : '0'})`
+
+    data.forEach((link) => {
+      linkValue = `http://localhost:4000/api/redirect/${link.shortUrl}`
+      let div = document.createElement('div')
+      div.classList.add('url-link')
+      let a = document.createElement('a')
+      a.classList.add('short-link')
+      a.href = linkValue
+      a.target = '_blank'
+      a.innerText = linkValue
+      div.appendChild(a)
+
+      // add delete button
+      let deleteButton = document.createElement('button')
+      deleteButton.classList.add('link-delete')
+      deleteButton.innerText = 'Supprimer'
+      deleteButton.addEventListener('click', () => deleteUrl(link.shortUrl))
+      let containerButton = document.createElement('div')
+      containerButton.appendChild(deleteButton)
+      div.appendChild(containerButton)
+
+      // add row
+      urlsArray.appendChild(div)
+    
+    })
+  } catch (e) {
+    console.log(e)
   }
 }

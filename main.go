@@ -23,6 +23,7 @@ type Shortener struct {
 	Url       string    `json:"url" db:"url"`
 	ShortUrl  string    `json:"shortUrl" db:"shortUrl"`
 	ExpiredAt time.Time `json:"expired_at" db:"expiredAt"`
+	Count     int       `json:"count" db:"count"`
 }
 
 type ErrorResponse struct {
@@ -98,7 +99,7 @@ func RunServer() http.Handler {
 		r.Post("/", createShortener)
 		r.Get("/redirect/{url}", getShortener)
 		r.Put("/", updateShortener)
-		r.Delete("/", deleteShortener)
+		r.Delete("/{url}", deleteShortener)
 	})
 
 	return router
@@ -141,7 +142,6 @@ func getAllUrls(w http.ResponseWriter, r *http.Request) {
 	var URLArray []Shortener
 	rows, err := db.Query("SELECT * FROM Shortener")
 	if err != nil {
-
 		http.NotFound(w, r)
 		return
 	}
@@ -152,17 +152,11 @@ func getAllUrls(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(URLArray)
-
 	json.NewEncoder(w).Encode(URLArray)
 }
 
 func updateShortener(w http.ResponseWriter, r *http.Request) {
 	updateUrl := &Shortener{}
-	err := json.NewDecoder(r.Body).Decode(updateUrl)
-	if err != nil {
-		log.Fatalf("error: %s", err.Error())
-	}
 
 	updateUrl.ExpiredAt = time.Now().Add(expired_time)
 	res, errSQL := db.Exec("Update Shortener set url = ?,expiredAt = ? where shortUrl = ?",
@@ -188,12 +182,9 @@ func updateShortener(w http.ResponseWriter, r *http.Request) {
 
 func deleteShortener(w http.ResponseWriter, r *http.Request) {
 	deleteUrl := &Shortener{}
-	err := json.NewDecoder(r.Body).Decode(deleteUrl)
-	if err != nil {
-		log.Fatalf("error: %s", err.Error())
-	}
+	shortUrl := chi.URLParam(r, "url")
 
-	res, errSQL := db.Exec("Delete from Shortener where shortUrl = ?", deleteUrl.ShortUrl)
+	res, errSQL := db.Exec("Delete from Shortener where shortUrl = ?", shortUrl)
 	if errSQL != nil {
 		handleSQLError(w, errSQL)
 		return

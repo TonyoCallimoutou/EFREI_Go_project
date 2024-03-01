@@ -234,3 +234,48 @@ main {
     }
   }
 }
+
+.urls-array-wrapper {
+  display: grid;
+  gap: 8px;
+  max-width: 800px;
+  margin: 12px auto;
+  background-color: var(--neutral-color-1);
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.urls-array {
+  display: grid;
+  gap: 8px;
+}
+
+.urls-array-title {
+  padding-bottom: 12px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--neutral-color-6);
+  border-bottom: 1px solid var(--neutral-color-2);
+}
+
+.urls-array-count {
+  color: var(--neutral-color-4);
+}
+
+.url-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid var(--neutral-color-2);
+}
+
+.link-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    text-decoration: 1px underline;
+  }
+}
